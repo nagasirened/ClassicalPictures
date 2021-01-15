@@ -1,0 +1,38 @@
+<?mapper version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imageman.mapper.CategoryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.imageman.pojo.Category">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="sort" property="sort" />
+        <result column="parent_id" property="parentId" />
+        <result column="slogan" property="slogan" />
+        <result column="logo" property="logo" />
+        <result column="created_time" property="createdTime" />
+        <result column="updated_time" property="updatedTime" />
+        <result column="flag" property="flag" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, `name`, `sort`, parent_id, slogan, logo, created_time, updated_time, flag
+    </sql>
+    
+    <resultMap id="categoryVO" type="com.imageman.pojo.vo.CategoryVO" extends="BaseResultMap">
+        <collection property="categoryVOList" column="id" select="com.imageman.mapper.CategoryMapper.getCategoriesByParentId"/>
+    </resultMap>
+    
+    <select id="getAllCategories" resultMap="categoryVO">
+        SELECT <include refid="Base_Column_List"/>
+        FROM i_category
+        WHERE parent_id = 0 ORDER BY sort ASC
+    </select>
+
+    <select id="getCategoriesByParentId" parameterType="string" resultMap="categoryVO">
+        SELECT <include refid="Base_Column_List"/>
+        FROM i_category
+        WHERE parent_id = #{parentId} ORDER BY sort ASC
+    </select>
+</mapper>
