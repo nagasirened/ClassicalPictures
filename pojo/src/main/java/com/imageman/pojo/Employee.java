@@ -5,11 +5,15 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 
 import java.time.LocalDateTime;
 
+import com.imageman.pojo.group.InsertGroup;
+import com.imageman.pojo.group.UpdateGroup;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -33,16 +37,19 @@ public class Employee extends Model<Employee> {
      * 主键 主键
      */
     @TableId(value = "ID", type = IdType.ID_WORKER_STR)
+    @NotNull(message = "参数出错，请重试", groups = UpdateGroup.class)
     private String id;
 
     /**
      * 昵称
      */
+    @NotEmpty(message = "姓名不能为空", groups = InsertGroup.class)
     private String username;
 
     /**
      * 密码
      */
+    @NotEmpty(groups = InsertGroup.class, message = "密码不能为空")
     private String password;
 
     /**
@@ -68,7 +75,12 @@ public class Employee extends Model<Employee> {
     /**
      * 生日
      */
-    private String birthday;
+    private LocalDateTime birthday;
+
+    /**
+     * 其他异常状态 0正常  1冻结  待拓展
+     */
+    private Integer accountStatus;
 
     /**
      * 创建时间 创建时间

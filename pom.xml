@@ -32,12 +32,12 @@
 			<groupId>com.nagasirened</groupId>
 			<artifactId>security-backup</artifactId>
 			<version>${security.backup.version}</version>
-			<exclusions>
+			<!--<exclusions>
 				<exclusion>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-starter-security</artifactId>
 				</exclusion>
-			</exclusions>
+			</exclusions>-->
 		</dependency>
 
 		<dependency>

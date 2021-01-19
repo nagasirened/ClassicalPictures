@@ -1,5 +1,6 @@
 package com.imageman.others.redis;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -64,7 +65,7 @@ public class RedisConfigure {
     public RedisTemplate<String, Long> longRedisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, Long> template = new RedisTemplate<>();
         template.setConnectionFactory(factory);
-        template.setValueSerializer(new GenericToStringSerializer<Long>(Long.class));
+        template.setValueSerializer(new GenericToStringSerializer<>(Long.class));
         //使用StringRedisSerializer来序列化和反序列化redis的key值
         template.setKeySerializer(new StringRedisSerializer());
         template.afterPropertiesSet();

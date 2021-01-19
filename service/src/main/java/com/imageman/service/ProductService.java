@@ -8,6 +8,8 @@ import com.imageman.pojo.bo.ProductParam;
 import com.imageman.pojo.vo.ProductElasticVO;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -43,4 +45,16 @@ public interface ProductService extends IService<Product> {
      * @return
      */
     Page<ProductElasticVO> searchByParam(ProductElasticSearchParam productElasticSearchParam) throws IOException;
+
+    /**
+     * 日常推荐 -- 定时任务去获取
+     * @return
+     */
+    Set<ProductElasticVO> dailyRecommended() throws IOException;
+
+    /**
+     * 日常推荐
+     * @return
+     */
+    Set<ProductElasticVO> getRecommend() throws IOException;
 }

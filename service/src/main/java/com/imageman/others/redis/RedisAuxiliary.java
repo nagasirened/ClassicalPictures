@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +22,7 @@ import java.util.concurrent.TimeUnit;
  * @description: redis操作工具
  * </p>
  * @author: ZengGuangfu
+ *
  */
 
 @Slf4j

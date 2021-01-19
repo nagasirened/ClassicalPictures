@@ -16,6 +16,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * <p>
@@ -66,7 +67,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
 
     private List<CategoryVO> actualGetAllCategories() {
         List<CategoryVO> allCategories = categoryMapper.getAllCategories();
-        redisAuxiliary.setWithoutExpire(BasicPrefix.CATEGORY_STORE_KEY, "", allCategories);
+        redisAuxiliary.setWithExpire(BasicPrefix.CATEGORY_STORE_KEY, "", allCategories);
         return allCategories;
     }
 

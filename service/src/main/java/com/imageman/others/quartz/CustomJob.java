@@ -1,13 +1,12 @@
-package com.imageman.others.quartz.spring;
+package com.imageman.others.quartz;
 
 import com.imageman.service.ProductService;
-import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
-import java.util.StringJoiner;
+import java.io.IOException;
 
 /**
  * author: ZGF
@@ -23,12 +22,10 @@ public class CustomJob extends QuartzJobBean {
 
     @Override
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-        System.out.println("=============================");
-        StringJoiner joiner = new StringJoiner(" ");
-        joiner.add(Thread.currentThread().getName())
-              .add(String.valueOf(System.currentTimeMillis()))
-              .add(productService.toString());
-        System.out.println(joiner.toString());
-        System.out.println("=============================");
+        try {
+            productService.dailyRecommended();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

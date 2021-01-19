@@ -2,9 +2,13 @@ package com.imageman.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.imageman.mapper.ProductImgMapper;
 import com.imageman.mapper.ProductMapper;
 import com.imageman.others.es.DefaultHignLevelDocumentHandler;
+import com.imageman.others.redis.RedisAuxiliary;
+import com.imageman.others.redis.prefix.BasicPrefix;
 import com.imageman.pojo.Product;
 import com.imageman.pojo.ProductImg;
 import com.imageman.pojo.bo.ProductElasticSearchParam;
@@ -15,21 +19,20 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.FuzzyQueryBuilder;
-import org.elasticsearch.index.query.MatchQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
+import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.util.*;
 
 /**
  * <p>
@@ -53,6 +56,14 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
     @Autowired
     private DefaultHignLevelDocumentHandler productClient;
+
+    @Autowired
+    private RedisAuxiliary redisAuxiliary;
+
+    @PostConstruct
+    public void loadRecommended() throws IOException {
+        this.dailyRecommended();
+    }
 
     /**
      * 新增一个商品信息
@@ -152,7 +163,45 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     }
 
     /**
-     * 解析es搜出来的neirong
+     * 每日推荐 -- 定时任务
+     * @return
+     */
+    @Override
+    public Set<ProductElasticVO> dailyRecommended() throws IOException {
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        // 查询三天内销售最高的数据
+        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().filter(new RangeQueryBuilder("createdTime").gte(LocalDateTime.now().plusDays(-3)));
+        builder.query(boolQueryBuilder);
+        builder.from(0);
+        builder.size(3);
+        builder.sort("sellCounts", SortOrder.DESC);
+        SearchResponse searchResponse = productClient.search(builder);
+        List<ProductElasticVO> analysis = analysis(searchResponse);
+        Set<ProductElasticVO> productElasticVOS = new HashSet<>();
+        while (productElasticVOS.size() < 2) {
+            int i = new Random().nextInt(3);
+            productElasticVOS.add(analysis.get(i));
+        }
+        redisAuxiliary.setWithExpire(BasicPrefix.DAILY_RECOMMENDED_PRODUCT, "", productElasticVOS);
+        return productElasticVOS;
+    }
+
+    /**
+     * 获取每日推荐
+     * @return
+     */
+    @Override
+    public Set<ProductElasticVO> getRecommend() throws IOException {
+        Set<ProductElasticVO> collectionRecommended = (Set<ProductElasticVO>)redisAuxiliary.get(BasicPrefix.DAILY_RECOMMENDED_PRODUCT, "");
+        if (CollectionUtils.isEmpty(collectionRecommended)) {
+            return dailyRecommended();
+        } else {
+            return collectionRecommended;
+        }
+    }
+
+    /**
+     * 解析es搜出来的内容
      * @param searchResponse
      * @return
      */
@@ -164,6 +213,5 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         }
         return productElasticVOS;
     }
-
 
 }

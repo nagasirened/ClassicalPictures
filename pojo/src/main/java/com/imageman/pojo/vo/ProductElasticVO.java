@@ -2,6 +2,7 @@ package com.imageman.pojo.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
  * context : 商品存储在ES中的基本信息
  */
 @Data
-public class ProductElasticVO {
+public class ProductElasticVO implements Serializable {
 
     private String id;
 

@@ -17,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Set;
 
 /**
  * <p>
@@ -61,6 +62,12 @@ public class ProductController {
     public ResponseVO<Page<ProductElasticVO>> getProductList(@RequestBody ProductElasticSearchParam productElasticSearchParam) throws IOException {
         Page<ProductElasticVO> result = productService.searchByParam(productElasticSearchParam);
         return ResponseVO.succ(result);
+    }
+
+    @GetMapping("/recommend")
+    @ApiOperation("【R】每日推荐")
+    public ResponseVO<Set<ProductElasticVO>> getDailyRecommend() throws IOException {
+        return ResponseVO.succ(productService.getRecommend());
     }
 }
 

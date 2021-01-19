@@ -1,4 +1,4 @@
-package com.imageman.others.quartz.spring;
+package com.imageman.others.quartz;
 
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +23,7 @@ public class JobDetailInit  {
                 .build();
 
         Trigger build = TriggerBuilder.newTrigger().withSchedule(
-                SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(100)
-                .repeatForever()
+                CronScheduleBuilder.cronSchedule("0 0 1 * * ?")
         ).build();
 
         scheduler.scheduleJob(jobDetail, build);

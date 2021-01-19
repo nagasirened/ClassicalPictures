@@ -35,7 +35,7 @@ public class TestAA {
     @Autowired
     private DefaultHignLevelDocumentHandler productClient;
 
-    @Test
+    // @Test
     public void addES() throws IOException {
         List<Product> products = productMapper.selectList(null);
 

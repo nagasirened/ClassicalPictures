@@ -52,4 +52,5 @@ public class ImageManApplication {
                 .version("1.0")
                 .build();
     }
+
 }
