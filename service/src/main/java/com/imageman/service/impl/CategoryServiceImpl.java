@@ -67,7 +67,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
 
     private List<CategoryVO> actualGetAllCategories() {
         List<CategoryVO> allCategories = categoryMapper.getAllCategories();
-        redisAuxiliary.setWithExpire(BasicPrefix.CATEGORY_STORE_KEY, "", allCategories);
+        redisAuxiliary.setWithoutExpire(BasicPrefix.CATEGORY_STORE_KEY, "", allCategories);
         return allCategories;
     }
 

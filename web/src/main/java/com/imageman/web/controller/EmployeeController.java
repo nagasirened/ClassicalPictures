@@ -16,8 +16,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.stereotype.Controller;
-
 
 /**
  * <p>
@@ -27,10 +25,9 @@ import org.springframework.stereotype.Controller;
  * @author KatoUyi
  * @since 2021-01-13
  */
-@Controller
+@RestController
 @RequestMapping("/employee")
 @Api(tags = "用户管理")
-@Secured("role_admin")
 public class EmployeeController {
 
     @Autowired
@@ -57,7 +54,7 @@ public class EmployeeController {
         return ResponseVO.succ();
     }
 
-    @PutMapping("admin")
+    @PutMapping("normal")
     @ApiOperation("使之变得平凡")
     public ResponseVO resetNormal(String employeeId) {
         employeeService.resetNormal(employeeId);
