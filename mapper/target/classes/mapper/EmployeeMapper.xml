@@ -15,11 +15,42 @@
         <result column="CREATED_TIME" property="createdTime" />
         <result column="UPDATED_TIME" property="updatedTime" />
         <result column="flag" property="flag" />
+        <result column="account_status" property="accountStatus" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        ID, username, password, face, mobile, email, sex, birthday, CREATED_TIME, UPDATED_TIME, flag
+        ID, username, password, face, mobile, email, sex, birthday, CREATED_TIME, UPDATED_TIME, flag, account_status
     </sql>
 
+    <select id="getDetailById" resultType="com.imageman.pojo.vo.EmployeeVO" parameterType="string">
+        SELECT e.id, e.username, e.face, e.mobile, e.email,
+              e.sex, e.birthday, e.CREATED_TIME,
+              e.UPDATED_TIME, e.account_status,
+               r.role_name
+        FROM i_employee e
+        LEFT JOIN i_employee_role er ON e.id = er.employee_id
+        LEFT JOIN i_role          r  ON er.role_id = r.id
+        WHERE e.id = #{employeeId}
+    </select>
+
+    <select id="selectPageByParam" resultType="com.imageman.pojo.vo.EmployeeVO">
+        SELECT e.id, e.username, e.mobile, e.email, e.sex, e.CREATED_TIME,
+              e.UPDATED_TIME, e.account_status, r.role_name
+        FROM i_employee e
+        LEFT JOIN i_employee_role er ON e.id = er.employee_id
+        LEFT JOIN i_role          r  ON er.role_id = r.id
+        <where>
+            <if test="param.searchInfo != null and param.searchInfo != ''">
+                AND (e.username like concat('', #{param.searchInfo}, '%') OR e.mobile like concat('', #{param.searchInfo}, '%'))
+            </if>
+            <if test="param.startTime != null">
+                AND DATE_FORMAT(e.CREATED_TIME, '%Y-%m-%d') &gt;= DATE_FORMAT(#{param.startTime},'%Y-%m-%d')
+            </if>
+            <if test="param.endTime != null">
+                AND DATE_FORMAT(e.CREATED_TIME, '%Y-%m-%d') &lt;= DATE_FORMAT(#{param.endTime},'%Y-%m-%d')
+            </if>
+        </where>
+
+    </select>
 </mapper>
